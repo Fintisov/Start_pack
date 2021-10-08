@@ -1,9 +1,9 @@
 //******************** GLOBAL ********************
-@import "#_variables";
-@import "#_default-style";
-@import "#_mixins";
-@import "#_helper-classes";
-@import "#_fonts";
+@import "global/variables";
+@import "global/default-style";
+@import "global/mixins";
+@import "global/helper-classes";
+@import "global/fonts";
 
 //******************** BLOCKS ********************
 @import "_index";
