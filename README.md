@@ -19,7 +19,7 @@
 
 **npm i --save-dev "name"** - installation of one plug
 
-**npm i --save-dev "name" "name" "name"** - installation multiple plugins
+**npm i --save-dev "name", "name", "name"** - installation multiple plugins
 
 **npm uninstall "name" --save-dev** - delete of one plugin
 

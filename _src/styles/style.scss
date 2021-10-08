@@ -1,8 +1,9 @@
 //******************** GLOBAL ********************
-@import "global/mixins.scss";
-@import "global/helper-classes.scss";
-@import "global/variables.scss";
-@import "global/fonts.scss";
+@import "#_variables";
+@import "#_default-style";
+@import "#_mixins";
+@import "#_helper-classes";
+@import "#_fonts";
 
 //******************** BLOCKS ********************
-@import "blocks/index.scss";
+@import "_index";
