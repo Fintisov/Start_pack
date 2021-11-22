@@ -15,6 +15,34 @@ const webp_html    = require('gulp-webp-html');
 const webp_css     = require('gulp-webp-css');
 const rename       = require('gulp-rename');
 
+//#################################################################
+
+function styleslibraries() {
+    return src([
+        'node_modules/normalize.css/normalize.css',
+    ])
+        .pipe(clean_css())
+        .pipe(concat('libraries.min.css'))
+        .pipe(dest('_src/styles'))
+        .pipe(dest('dist/styles'))
+        .pipe(browser_sync.stream())
+}
+
+//----------------------
+
+function scriptslibraries() {
+    return src([
+        'node_modules/jquery/dist/jquery.js',
+    ])
+        .pipe(uglify())
+        .pipe(concat('libraries.min.js'))
+        .pipe(dest('_src/scripts'))
+        .pipe(dest('dist/scripts'))
+        .pipe(browser_sync.stream())
+}
+
+//#################################################################
+
 function html() {
     return src('_src/pages/*.html')
         .pipe(file_include())
@@ -75,7 +103,6 @@ function build() {
     return src ([
         '_src/assets/**/*',
         '_src/fonts/**/*',
-        '_src/icon/**/*',
     ], {base: '_src'})
         .pipe(dest('dist'))
 }
@@ -97,35 +124,11 @@ function watching() {
     watch(['_src/scripts/**/*.js', '!_src/scripts/script.min.js'], scripts);
     watch(['_src/images/**/*.{jpg,png,svg,gif,ico,webp}'], images);
     watch(['_src/pages/**/*.html']).on('change', browser_sync.reload);
-    watch(['_src/fonts/**/*', '_src/assets/**/*', '_src/icon/**/*'], build);
+    watch(['_src/fonts/**/*', '_src/assets/**/*'], build);
 }
 
 function cleanDist() {
     return del('dist')
-}
-
-function styleslibraries() {
-    return src([
-        'node_modules/normalize.css/normalize.css',
-
-    ])
-        .pipe(clean_css())
-        .pipe(concat('libraries.min.css'))
-        .pipe(dest('_src/styles'))
-        .pipe(dest('dist/styles'))
-        .pipe(browser_sync.stream())
-}
-
-function scriptslibraries() {
-    return src([
-        'node_modules/jquery/dist/jquery.js',
-
-    ])
-        .pipe(uglify())
-        .pipe(concat('libraries.min.js'))
-        .pipe(dest('_src/scripts'))
-        .pipe(dest('dist/scripts'))
-        .pipe(browser_sync.stream())
 }
 
 exports.html        = html;
