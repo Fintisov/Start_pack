@@ -15,7 +15,7 @@ const webp_html    = require('gulp-webp-html');
 const webp_css     = require('gulp-webp-css');
 const rename       = require('gulp-rename');
 
-//#################################################################
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 function styleslibraries() {
     return src([
@@ -41,7 +41,7 @@ function scriptslibraries() {
         .pipe(browser_sync.stream())
 }
 
-//#################################################################
+//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 function html() {
     return src('_src/pages/*.html')
@@ -99,6 +99,21 @@ function images() {
         .pipe(browser_sync.stream())
 }
 
+function assets() {
+    return src('_src/assets/**/*.{jpg,png,svg,gif,ico,webp}')
+        .pipe(webp({quality: 70}))
+        .pipe(dest('dist/assets'))
+        .pipe(src('_src/assets/**/*.{jpg,png,svg,gif,ico,webp}'))
+        .pipe(image_min({
+            progressive: true,
+            svgoPlugins: [{removeViewBox: false}],
+            interlaced: true,
+            optimizationLevel: 4 // 0 to 7
+        }))
+        .pipe(dest('dist/assets'))
+        .pipe(browser_sync.stream())
+}
+
 function build() {
     return src ([
         '_src/assets/**/*',
@@ -123,6 +138,7 @@ function watching() {
     watch(['_src/styles/**/*.scss'], styles);
     watch(['_src/scripts/**/*.js', '!_src/scripts/script.min.js'], scripts);
     watch(['_src/images/**/*.{jpg,png,svg,gif,ico,webp}'], images);
+    watch(['_src/assets/**/*.{jpg,png,svg,gif,ico,webp}'], assets);
     watch(['_src/pages/**/*.html']).on('change', browser_sync.reload);
     watch(['_src/fonts/**/*', '_src/assets/**/*'], build);
 }
@@ -141,5 +157,5 @@ exports.stylesLib   = styleslibraries;
 exports.scriptsLib  = scriptslibraries;
 exports.browserSync = browserSync;
 
-exports.build = series(cleanDist, build, html, styles, scripts, styleslibraries, scriptslibraries, images);
-exports.default = parallel(html, styles, scripts, styleslibraries, scriptslibraries, images, build, watching, browserSync);
+exports.build = series(cleanDist, build, html, styles, scripts, styleslibraries, scriptslibraries, images, assets);
+exports.default = parallel(html, styles, scripts, styleslibraries, scriptslibraries, images, assets, build, watching, browserSync);
