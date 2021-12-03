@@ -17,34 +17,46 @@ const rename       = require('gulp-rename');
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-function styleslibraries() {
+function stylesPlugins() {
     return src([
         'node_modules/normalize.css/normalize.css',
     ])
+        .pipe(dest('_src/styles/plugins'))
+        .pipe(dest('dist/styles/plugins'))
         .pipe(clean_css())
-        .pipe(concat('libraries.min.css'))
-        .pipe(dest('_src/styles'))
-        .pipe(dest('dist/styles'))
+        .pipe(rename({
+            extname: '.min.css'
+        }))
+        .pipe(dest('_src/styles/plugins'))
+        .pipe(dest('dist/styles/plugins'))
         .pipe(browser_sync.stream())
 }
 
 //----------------------
 
-function scriptslibraries() {
+function scriptsPlugins() {
     return src([
         'node_modules/jquery/dist/jquery.js',
     ])
+        .pipe(dest('_src/scripts/plugins'))
+        .pipe(dest('dist/scripts/plugins'))
         .pipe(uglify())
-        .pipe(concat('libraries.min.js'))
-        .pipe(dest('_src/scripts'))
-        .pipe(dest('dist/scripts'))
+        .pipe(rename({
+            extname: '.min.js'
+        }))
+        .pipe(dest('_src/scripts/plugins'))
+        .pipe(dest('dist/scripts/plugins'))
         .pipe(browser_sync.stream())
 }
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 function html() {
-    return src('_src/pages/*.html')
+    return src([
+        '_src/pages/*.html',
+        '!_src/pages/_head.html',
+        '!_src/pages/_scripts.html',
+    ])
         .pipe(file_include())
         .pipe(webp_html())
         .pipe(dest('dist/pages'))
@@ -61,6 +73,7 @@ function styles() {
             grid: true,
             cascade: true,
         }))
+        .pipe(dest('_src/styles'))
         .pipe(dest('dist/styles'))
         .pipe(clean_css())
         .pipe(rename({
@@ -72,7 +85,10 @@ function styles() {
 }
 
 function scripts() {
-    return src('_src/scripts/script.js')
+    return src([
+        '_src/scripts/*.js',
+        '!_src/scripts/*.min.js',
+    ])
         .pipe(file_include())
         .pipe(dest('dist/scripts'))
         .pipe(uglify())
@@ -147,15 +163,16 @@ function cleanDist() {
     return del('dist')
 }
 
-exports.html        = html;
-exports.styles      = styles;
-exports.scripts     = scripts;
-exports.images      = images;
-exports.watching    = watching;
-exports.cleanDist   = cleanDist;
-exports.stylesLib   = styleslibraries;
-exports.scriptsLib  = scriptslibraries;
-exports.browserSync = browserSync;
+exports.html            = html;
+exports.styles          = styles;
+exports.scripts         = scripts;
+exports.images          = images;
+exports.assets          = assets;
+exports.watching        = watching;
+exports.cleanDist       = cleanDist;
+exports.browserSync     = browserSync;
+exports.stylesPlugins   = stylesPlugins;
+exports.scriptsPlugins  = scriptsPlugins;
 
-exports.build = series(cleanDist, build, html, styles, scripts, styleslibraries, scriptslibraries, images, assets);
-exports.default = parallel(html, styles, scripts, styleslibraries, scriptslibraries, images, assets, build, watching, browserSync);
+exports.build = series(cleanDist, build, html, styles, scripts, images, assets, stylesPlugins, scriptsPlugins);
+exports.default = parallel(html, styles, scripts, stylesPlugins, scriptsPlugins, images, assets, build, watching, browserSync);
