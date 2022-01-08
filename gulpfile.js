@@ -1,19 +1,21 @@
 const {src, dest, watch, parallel, series} = require('gulp');
 
-const del          = require('del');
-const scss         = require('gulp-sass')(require('sass'));
-const concat       = require('gulp-concat');
-const uglify       = require('gulp-uglify-es').default;
-const clean_css    = require('gulp-clean-css');
+const del = require('del');
+const scss = require('gulp-sass')(require('sass'));
+const concat = require('gulp-concat');
+const uglify = require('gulp-uglify-es').default;
+const clean_css = require('gulp-clean-css');
 const browser_sync = require('browser-sync').create();
 const file_include = require('gulp-file-include');
-const group_media  = require('gulp-group-css-media-queries');
+const group_media = require('gulp-group-css-media-queries');
 const autoprefixer = require('gulp-autoprefixer');
-const image_min    = require('gulp-imagemin');
-const webp         = require('gulp-webp');
-const webp_html    = require('gulp-webp-html');
-const webp_css     = require('gulp-webp-css');
-const rename       = require('gulp-rename');
+const image_min = require('gulp-imagemin');
+const webp = require('gulp-webp');
+const webp_html = require('gulp-webp-html');
+const webp_css = require('gulp-webp-css');
+const rename = require('gulp-rename');
+const notify = require('gulp-notify');
+const plumber = require('gulp-plumber');
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
@@ -57,6 +59,10 @@ function html() {
         '!_src/pages/_head.html',
         '!_src/pages/_scripts.html',
     ])
+        .pipe(plumber(notify.onError({
+                "title": "HTML",
+                "message": "Error: <%= error.message %>"
+            })))
         .pipe(file_include())
         .pipe(webp_html())
         .pipe(dest('dist/pages'))
@@ -65,6 +71,10 @@ function html() {
 
 function styles() {
     return src('_src/styles/style.scss')
+        .pipe(plumber(notify.onError({
+                "title": "SCSS",
+                "message": "Error: <%= error.message %>"
+            })))
         .pipe(scss({outputStyle: 'expanded'}))
         .pipe(webp_css())
         .pipe(group_media())
@@ -89,6 +99,10 @@ function scripts() {
         '_src/scripts/*.js',
         '!_src/scripts/*.min.js',
     ])
+        .pipe(plumber(notify.onError({
+                "title": "JS",
+                "message": "Error: <%= error.message %>"
+            })))
         .pipe(file_include())
         .pipe(dest('dist/scripts'))
         .pipe(uglify())
@@ -131,7 +145,7 @@ function assets() {
 }
 
 function build() {
-    return src ([
+    return src([
         '_src/assets/**/*',
         '_src/fonts/**/*',
     ], {base: '_src'})
@@ -163,16 +177,16 @@ function cleanDist() {
     return del('dist')
 }
 
-exports.html            = html;
-exports.styles          = styles;
-exports.scripts         = scripts;
-exports.images          = images;
-exports.assets          = assets;
-exports.watching        = watching;
-exports.cleanDist       = cleanDist;
-exports.browserSync     = browserSync;
-exports.stylesPlugins   = stylesPlugins;
-exports.scriptsPlugins  = scriptsPlugins;
+exports.html = html;
+exports.styles = styles;
+exports.scripts = scripts;
+exports.images = images;
+exports.assets = assets;
+exports.watching = watching;
+exports.cleanDist = cleanDist;
+exports.browserSync = browserSync;
+exports.stylesPlugins = stylesPlugins;
+exports.scriptsPlugins = scriptsPlugins;
 
 exports.build = series(cleanDist, build, html, styles, scripts, images, assets, stylesPlugins, scriptsPlugins);
 exports.default = parallel(html, styles, scripts, stylesPlugins, scriptsPlugins, images, assets, build, watching, browserSync);
