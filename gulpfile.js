@@ -25,12 +25,6 @@ function stylesPlugins() {
     ])
         .pipe(dest('_src/styles/plugins'))
         .pipe(dest('dist/styles/plugins'))
-        .pipe(clean_css())
-        .pipe(rename({
-            extname: '.min.css'
-        }))
-        .pipe(dest('_src/styles/plugins'))
-        .pipe(dest('dist/styles/plugins'))
         .pipe(browser_sync.stream())
 }
 
@@ -38,14 +32,8 @@ function stylesPlugins() {
 
 function scriptsPlugins() {
     return src([
-        'node_modules/jquery/dist/jquery.js',
+        'node_modules/jquery/dist/jquery.min.js',
     ])
-        .pipe(dest('_src/scripts/plugins'))
-        .pipe(dest('dist/scripts/plugins'))
-        .pipe(uglify())
-        .pipe(rename({
-            extname: '.min.js'
-        }))
         .pipe(dest('_src/scripts/plugins'))
         .pipe(dest('dist/scripts/plugins'))
         .pipe(browser_sync.stream())
